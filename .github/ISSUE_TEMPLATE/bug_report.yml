@@ -74,7 +74,7 @@ body:
     attributes:
       label: Manager Type
       options:
-        - KernelSU-Next
+        - KernelSU
         - KernelSU
         - WildKSU
         - pershoot KSUN
