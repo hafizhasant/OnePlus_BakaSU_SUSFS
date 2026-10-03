@@ -1109,8 +1109,7 @@ runs:
             fi
             ;;
           "v2.3.0")
-            cd "$KSU_FOLDER"
-            patch -p1 --forward < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
+            echo "ReSukiSU ships its own SUSFS Kconfig - skipping the KernelSU patch"
             ;;
           *)
             echo "::error::Unsupported SUSFS version: $susfs_version"
