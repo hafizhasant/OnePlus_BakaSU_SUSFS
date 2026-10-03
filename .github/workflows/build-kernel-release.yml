@@ -725,7 +725,7 @@ jobs:
             echo "Outputs:"
             echo "  - Kernel: ${{ steps.build.outputs.kernel_version }}"
             if [ "${{ matrix.ksu_type }}" = "KSUN" ]; then
-              echo "  - KSU Next: v${{ steps.build.outputs.ksu_version }}"
+              echo "  - ReSukiSU: v${{ steps.build.outputs.ksu_version }}"
               echo "ksun_ver=${{ steps.build.outputs.ksu_version }}" >> "$GITHUB_OUTPUT"
               echo "ksu_ver=" >> "$GITHUB_OUTPUT"
             else
@@ -778,7 +778,7 @@ jobs:
           EOF
             if [ "${{ matrix.ksu_type }}" = "KSUN" ]; then
               cat >> $GITHUB_STEP_SUMMARY << EOF
-          | **KSU Next** | v${{ steps.build.outputs.ksu_version }} |
+          | **ReSukiSU** | v${{ steps.build.outputs.ksu_version }} |
           EOF
             else
               cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -853,7 +853,7 @@ jobs:
       REPO_NAME: ${{ github.event.repository.name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SUSFS_BASE_VERSION: ${{ needs.set-op-model.outputs.susfs_base_version }}
-      RELEASE_NAME: '*TEST BUILD* OnePlus Kernels With KernelSU Next & SUSFS ${{ needs.set-op-model.outputs.susfs_base_version }} *TEST BUILD*'
+      RELEASE_NAME: '*TEST BUILD* OnePlus Kernels With ReSukiSU & SUSFS ${{ needs.set-op-model.outputs.susfs_base_version }} *TEST BUILD*'
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v6
@@ -942,7 +942,7 @@ jobs:
             <<< "${{ needs.set-op-model.outputs.active_gki_keys }}"
           
           cat << EOF > release_notes.md
-          # 🎯 OnePlus Kernels with KernelSU Next & SUSFS $SUSFS_BASE_VERSION
+          # 🎯 OnePlus Kernels with ReSukiSU & SUSFS $SUSFS_BASE_VERSION
           
           > **Build Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
           > **Build ID:** \`${{ github.run_id }}\`  
@@ -1059,8 +1059,8 @@ jobs:
           ksu_display=$(ksu_display_value "$ksu_ref" "$ksu_resolved_hash")
           if [ "$ksu_type" == "KSUN" ]; then
             cat << EOF >> release_notes.md
-          | **KernelSU Next Branch** | \`$ksu_display\` |
-          | **KernelSU Next Version** | \`$ksu_ver_global\` |
+          | **ReSukiSU Branch** | \`$ksu_display\` |
+          | **ReSukiSU Version** | \`$ksu_ver_global\` |
           EOF
           elif [ "$ksu_type" == "KSU" ]; then
             cat << EOF >> release_notes.md
@@ -1095,7 +1095,7 @@ jobs:
           EOF
           if [ "$ksu_type" == "KSUN" ]; then
             cat << EOF >> release_notes.md
-          - **KernelSU Next** - Next-generation kernel-level root solution
+          - **ReSukiSU** - Next-generation kernel-level root solution
           EOF
           elif [ "$ksu_type" == "KSU" ]; then
             cat << EOF >> release_notes.md
@@ -1156,7 +1156,7 @@ jobs:
           EOF
           if [ "$ksu_type" == "KSUN" ]; then
             cat << EOF >> release_notes.md
-          - **KernelSU Next Manager**  
+          - **ReSukiSU Manager**  
             → [GitHub Release](https://github.com/KernelSU-Next/KernelSU-Next/releases)
           EOF
           elif [ "$ksu_type" == "KSU" ]; then
@@ -1225,7 +1225,7 @@ jobs:
           
           ## 🙏 Credits
           
-          - **KernelSU Next Team** - Root solution
+          - **ReSukiSU Team** - Root solution
           - **KernelSU Team** - Root solution
           - **simonpunk** - SUSFS development
           - **OnePlus** - Kernel source code
