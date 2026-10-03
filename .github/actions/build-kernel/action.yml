@@ -858,7 +858,7 @@ runs:
         
         if [ "${{ env.OP_SUSFS }}" = true ]; then
           echo "Using SUSFS branch/commit: $SUSFS_BRANCH"
-          if ! retry_fetch_archive "https://gitlab.com/simonpunk/susfs4ksu.git" "$SUSFS_BRANCH"; then
+          if ! (for i in 1 2 3; do rm -rf susfs4ksu; mkdir susfs4ksu; if (cd susfs4ksu && git init -q && git remote add origin https://gitlab.com/simonpunk/susfs4ksu.git && git fetch -q --depth 1 origin "$SUSFS_BRANCH" && git checkout -q FETCH_HEAD); then exit 0; fi; echo "SUSFS clone attempt $i failed"; sleep 5; done; exit 1); then
             echo "::error::Failed to fetch SUSFS archive after multiple attempts"
             exit 1
           fi
