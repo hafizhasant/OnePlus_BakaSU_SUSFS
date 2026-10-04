@@ -2478,6 +2478,7 @@ runs:
         fetch-depth: 1
 
     - name: Save ccache cache
+      continue-on-error: true
       if: always() && steps.build_kernel_step.conclusion == 'success'
       uses: ./action-source/.github/actions/cache/save
       with:
