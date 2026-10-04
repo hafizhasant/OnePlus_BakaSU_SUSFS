@@ -1871,6 +1871,37 @@ runs:
           patch -p1 < "$KERNEL_PATCHES_FOLDER/common/vendor_modules/0001-Support-conditional-vendor-modules-blacklisting-6.1-and-above.patch"
         fi
         
+    - name: Extra tweaks (ADIOS, Boeffla, Sultan, PIE)
+      shell: bash
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        cd "$COMMON_KERNEL_FOLDER" || exit 0
+        CFG=arch/arm64/configs/gki_defconfig
+        setcfg() { sed -i "/^$1=/d;/^# $1 is not set/d" "$CFG"; echo "$1=$2" >> "$CFG"; }
+        tp() { patch -p1 --dry-run --ignore-whitespace -F 3 < "$1" >/dev/null 2>&1 && patch -p1 --ignore-whitespace -F 3 < "$1" >/dev/null 2>&1; }
+        if [ ! -f block/adios.c ]; then
+          rm -rf /tmp/bkp
+          if git clone -q --depth=1 https://github.com/Bouteillepleine/kernel_patches.git /tmp/bkp; then
+            tp "/tmp/bkp/experimental/adios_ioscheduler_${KERNEL_VER}.patch" && echo "ADIOS applied" || echo "ADIOS skipped"
+          fi
+        fi
+        if [ -f block/adios.c ]; then setcfg CONFIG_MQ_IOSCHED_ADIOS y; setcfg CONFIG_MQ_IOSCHED_DEFAULT_ADIOS y; echo "ADIOS configured"; fi
+        if ! grep -q check_for_block drivers/base/power/wakeup.c 2>/dev/null; then
+          curl -fsSL https://raw.githubusercontent.com/hafizhasant/OnePlus_ReSukiSU_SUSFS/main/patches/experimental/boeffla_wl_blocker.patch -o /tmp/boeffla.patch && tp /tmp/boeffla.patch && echo "Boeffla applied" || echo "Boeffla skipped"
+        fi
+        if [ -f drivers/base/power/boeffla_wl_blocker.c ]; then
+          W=drivers/base/power/wakeup.c
+          grep -q '^static void wakeup_source_deactivate(struct wakeup_source \*ws);$' $W || sed -i '/^static void wakeup_source_activate(struct wakeup_source \*ws)$/i static void wakeup_source_deactivate(struct wakeup_source *ws);' $W
+          sed -i 's|^extern char list_wl_search\[LENGTH_LIST_WL_SEARCH\];$|char list_wl_search[LENGTH_LIST_WL_SEARCH] = {0};|' drivers/base/power/boeffla_wl_blocker.c
+          setcfg CONFIG_BOEFFLA_WL_BLOCKER y; echo "Boeffla configured"
+        fi
+        for n in avoid_extra_s2idle_wake_attempts clear_page_16bytes_align reduce_freeze_timeout minimise_wakeup_time adjust_cpu_scan_order; do
+          f="$KERNEL_PATCHES_FOLDER/common/$n.patch"
+          [ -f "$f" ] && tp "$f" && echo "Sultan applied: $n" || echo "Sultan skipped: $n"
+        done
+        setcfg CONFIG_NET_SCH_PIE y
+        exit 0
     - name: Build Kernel
       id: build_kernel_step
       shell: bash
