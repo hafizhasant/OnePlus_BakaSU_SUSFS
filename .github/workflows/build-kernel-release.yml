@@ -201,8 +201,8 @@ jobs:
           ksu_ref=$(echo "$ksu_options_normalized" | jq -r '.[0].hash')
           
           if [ "$ksu_type" == "RSKSU" ]; then
-            KSU_REPO_OWNER="ReSukiSU"
-            KSU_REPO_NAME="ReSukiSU"
+            KSU_REPO_OWNER="Baka-SU"
+            KSU_REPO_NAME="BakaSU"
           else
             KSU_REPO_OWNER="tiann"
             KSU_REPO_NAME="KernelSU"
