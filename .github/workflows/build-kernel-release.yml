@@ -23,7 +23,7 @@ on:
         description: 'Enter KernelSU build json'
         required: true
         type: string
-        default: '[{"type":"RSKSU","hash":"4c5c8cedaf3cecf297f9b529362e529f506e6891"}]'
+        default: '[{"type":"RSKSU","hash":"969de3d0ce65d2d75e5a2f6c548d9e14817ef459"}]'
       optimize_level:
         description: "Compiler optimization level"
         required: true
