@@ -10,7 +10,7 @@ inputs:
     required: true
     type: choice
     options:
-      - RSKSU
+      - BAKASU
       - KSU
   ksu_branch_or_hash:
     description: 'KSU branch or commit hash (empty = auto-detect by ksu_type)'
@@ -360,7 +360,7 @@ runs:
         KERNEL_PATCHES_DIR="$GITHUB_WORKSPACE/kernel_patches"
         SUSFS_DIR="$GITHUB_WORKSPACE/susfs4ksu"
         KSU_DIR="$KERNEL_PLATFORM_DIR/KernelSU"
-        RSKSU_DIR="$KERNEL_PLATFORM_DIR/KernelSU"
+        BAKASU_DIR="$KERNEL_PLATFORM_DIR/KernelSU"
         mkdir -p "$ARTIFACTS_DIR"
         mkdir -p "$DEBUG_ARTIFACTS_DIR"
         
@@ -375,7 +375,7 @@ runs:
         echo "KERNEL_PATCHES_FOLDER=$KERNEL_PATCHES_DIR" >> "$GITHUB_ENV"
         echo "SUSFS_FOLDER=$SUSFS_DIR" >> "$GITHUB_ENV"
         echo "KSU_FOLDER=$KSU_DIR" >> "$GITHUB_ENV"
-        echo "RSKSU_FOLDER=$RSKSU_DIR" >> "$GITHUB_ENV"
+        echo "BAKASU_FOLDER=$BAKASU_DIR" >> "$GITHUB_ENV"
         
         DEBUG_ZIP_NAME="debug_${OP_MODEL}_${OP_OS_VERSION}.zip"
         echo "DEBUG_ZIP_NAME=$DEBUG_ZIP_NAME" >> "$GITHUB_ENV"
@@ -879,7 +879,7 @@ runs:
 
     - name: Add ReSukiSU
       shell: bash
-      if: ${{ inputs.ksu_type == 'RSKSU' }}
+      if: ${{ inputs.ksu_type == 'BAKASU' }}
       run: |
         set -euo pipefail
         echo "::group::Add ReSukiSU"
@@ -926,13 +926,13 @@ runs:
         echo "KSU_COMMIT_SHA=$KSU_COMMIT_SHA" >> $GITHUB_ENV
         
         
-        echo "Add RSKSU Configuration Settings"
+        echo "Add BAKASU Configuration Settings"
         cat >> "$COMMON_KERNEL_FOLDER/arch/arm64/configs/gki_defconfig" <<EOF
         CONFIG_KSU=y
         CONFIG_KSU_KPROBES_HOOK=n
         EOF
         
-        echo "RSKSU" >> "${ARTIFACTS_FOLDER}/${OP_MODEL}_${OP_OS_VERSION}.txt"
+        echo "BAKASU" >> "${ARTIFACTS_FOLDER}/${OP_MODEL}_${OP_OS_VERSION}.txt"
         echo "$KSU_VERSION" >> "${ARTIFACTS_FOLDER}/${OP_MODEL}_${OP_OS_VERSION}.txt"
         echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
         echo "ReSukiSU Version: $KSU_VERSION"
@@ -1016,7 +1016,7 @@ runs:
         
         case "$susfs_version" in
           "v1.5.8")
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
               patch -p1 --forward --fuzz=3 < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
               patch -p1 --forward --fuzz=3 < "$KERNEL_PATCHES_FOLDER/next/susfs_fix_patches/$susfs_version/fix_apk_sign.c.patch"
               patch -p1 --forward --fuzz=3 < "$KERNEL_PATCHES_FOLDER/next/susfs_fix_patches/$susfs_version/fix_core_hook.c.patch"
@@ -1028,8 +1028,8 @@ runs:
             fi
             ;;
           "v1.5.9"|"v1.5.10"|"v1.5.11"|"v1.5.12")
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-              cd "$RSKSU_FOLDER"
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+              cd "$BAKASU_FOLDER"
               patch -p1 --forward < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
               for file in $(find ./kernel -maxdepth 2 -name "*.rej" -printf "%f\n" | cut -d'.' -f1); do
                 echo "Patching file: $file.c with fix_$file.c.patch"
@@ -1042,8 +1042,8 @@ runs:
             fi
             ;;
           "v2.0.0")
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-              cd "$RSKSU_FOLDER"
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+              cd "$BAKASU_FOLDER"
               patch -p1 --forward < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
               for file in $(find ./kernel -maxdepth 2 -name "*.rej" -exec basename {} .rej \;); do
                 echo "Patching file: $file with fix_$file.patch"
@@ -1067,8 +1067,8 @@ runs:
             fi
             ;;
           "v2.1.0")
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-              cd "$RSKSU_FOLDER"
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+              cd "$BAKASU_FOLDER"
               patch -p1 --forward < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
               for file in $(find ./kernel -maxdepth 2 -name "*.rej" -exec basename {} .rej \;); do
                 echo "Patching file: $file with fix_$file.patch"
@@ -1092,8 +1092,8 @@ runs:
             fi
             ;;
           "v2.2.0")
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-              cd "$RSKSU_FOLDER"
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+              cd "$BAKASU_FOLDER"
               patch -p1 --forward < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" || true
               for file in $(find ./kernel -maxdepth 2 -name "*.rej" -exec basename {} .rej \;); do
                 echo "Patching file: $file with fix_$file.patch"
@@ -2327,9 +2327,9 @@ runs:
           echo "Kernel Uname: ${{ env.KERNEL_UNAME }}"
           echo "Build User: ${{ env.BUILD_USER }}"
           echo "Build Host: ${{ env.BUILD_HOST }}"
-          if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-            echo "RSKSU Version: ${KSUVER:-unknown}"
-            echo "RSKSU commit SHA: ${KSU_SHA:-unknown}"
+          if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+            echo "BAKASU Version: ${KSUVER:-unknown}"
+            echo "BAKASU commit SHA: ${KSU_SHA:-unknown}"
           else
             echo "KSU Version: ${KSUVER:-unknown}"
             echo "KSU commit SHA: ${KSU_SHA:-unknown}"
@@ -2378,15 +2378,15 @@ runs:
           echo "| **Kernel Uname** | \`${{ env.KERNEL_UNAME }}\` |"
           echo "| **Build User** | ${{ env.BUILD_USER }} |"
           echo "| **Build Host** | ${{ env.BUILD_HOST }} |"
-          if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-            echo "| **RSKSU Version** | ${KSUVER:-unknown} |"
+          if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+            echo "| **BAKASU Version** | ${KSUVER:-unknown} |"
           else
             echo "| **KSU Version** | ${KSUVER:-unknown} |"
           fi
           
           if [ "$KSU_SHA" != "unknown" ]; then
-            if [ "${{ inputs.ksu_type }}" = "RSKSU" ]; then
-              echo "| **RSKSU Commit** | [\`${KSU_SHA:0:8}\`](https://github.com/KernelSU/KernelSU/commit/$KSU_SHA) |"
+            if [ "${{ inputs.ksu_type }}" = "BAKASU" ]; then
+              echo "| **BAKASU Commit** | [\`${KSU_SHA:0:8}\`](https://github.com/KernelSU/KernelSU/commit/$KSU_SHA) |"
             else
               echo "| **KSU Commit** | [\`${KSU_SHA:0:8}\`](https://github.com/tiann/KernelSU/commit/$KSU_SHA) |"
             fi

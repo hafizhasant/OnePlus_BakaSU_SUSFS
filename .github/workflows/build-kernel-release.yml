@@ -23,7 +23,7 @@ on:
         description: 'Enter KernelSU build json'
         required: true
         type: string
-        default: '[{"type":"RSKSU","hash":"969de3d0ce65d2d75e5a2f6c548d9e14817ef459"}]'
+        default: '[{"type":"BAKASU","hash":"969de3d0ce65d2d75e5a2f6c548d9e14817ef459"}]'
       optimize_level:
         description: "Compiler optimization level"
         required: true
@@ -104,7 +104,7 @@ jobs:
           
           input="${{ github.event.inputs.op_model }}"
           ksu_options_raw='${{ github.event.inputs.ksu_options }}'
-          if ! ksu_options_normalized=$(echo "$ksu_options_raw" | jq -c 'map(if .type then .type |= ascii_upcase | if .hash == null then if .type == "RSKSU" then .hash = "dev" elif .type == "KSU" then .hash = "main" else .hash end else . end else error("No type found") end)' 2>&1); then
+          if ! ksu_options_normalized=$(echo "$ksu_options_raw" | jq -c 'map(if .type then .type |= ascii_upcase | if .hash == null then if .type == "BAKASU" then .hash = "dev" elif .type == "KSU" then .hash = "main" else .hash end else . end else error("No type found") end)' 2>&1); then
             echo "::error::ksu_options validation failed: $ksu_options_normalized"
             exit 1
           fi
@@ -200,7 +200,7 @@ jobs:
           ksu_type=$(echo "$ksu_options_normalized" | jq -r '.[0].type')
           ksu_ref=$(echo "$ksu_options_normalized" | jq -r '.[0].hash')
           
-          if [ "$ksu_type" == "RSKSU" ]; then
+          if [ "$ksu_type" == "BAKASU" ]; then
             KSU_REPO_OWNER="Baka-SU"
             KSU_REPO_NAME="BakaSU"
           else
@@ -440,7 +440,7 @@ jobs:
           ksu_ref="${{ fromJSON(steps.set-matrix.outputs.ksu_options_normalized)[0].hash }}"
           
           ksu_display=""
-          if [ "$ksu_type" = "RSKSU" ] || [ "$ksu_type" = "KSU" ]; then
+          if [ "$ksu_type" = "BAKASU" ] || [ "$ksu_type" = "KSU" ]; then
             if [[ "$ksu_ref" =~ ^[0-9a-f]{40}$ ]]; then
               ksu_display+="📌 \`$ksu_type\`, \`$ksu_ref\`"
             else
@@ -714,7 +714,7 @@ jobs:
             echo ""
             echo "Outputs:"
             echo "  - Kernel: ${{ steps.build.outputs.kernel_version }}"
-            if [ "${{ matrix.ksu_type }}" = "RSKSU" ]; then
+            if [ "${{ matrix.ksu_type }}" = "BAKASU" ]; then
               echo "  - ReSukiSU: v${{ steps.build.outputs.ksu_version }}"
               echo "ksun_ver=${{ steps.build.outputs.ksu_version }}" >> "$GITHUB_OUTPUT"
               echo "ksu_ver=" >> "$GITHUB_OUTPUT"
@@ -766,7 +766,7 @@ jobs:
           |--------|-------|
           | **Kernel** | ${{ steps.build.outputs.kernel_version }} |
           EOF
-            if [ "${{ matrix.ksu_type }}" = "RSKSU" ]; then
+            if [ "${{ matrix.ksu_type }}" = "BAKASU" ]; then
               cat >> $GITHUB_STEP_SUMMARY << EOF
           | **ReSukiSU** | v${{ steps.build.outputs.ksu_version }} |
           EOF
@@ -1047,7 +1047,7 @@ jobs:
           }
           
           ksu_display=$(ksu_display_value "$ksu_ref" "$ksu_resolved_hash")
-          if [ "$ksu_type" == "RSKSU" ]; then
+          if [ "$ksu_type" == "BAKASU" ]; then
             cat << EOF >> release_notes.md
           | **ReSukiSU Branch** | \`$ksu_display\` |
           | **ReSukiSU Version** | \`$ksu_ver_global\` |
@@ -1083,7 +1083,7 @@ jobs:
           
           ### 🔐 Root Management
           EOF
-          if [ "$ksu_type" == "RSKSU" ]; then
+          if [ "$ksu_type" == "BAKASU" ]; then
             cat << EOF >> release_notes.md
           - **ReSukiSU** - Next-generation kernel-level root solution
           EOF
@@ -1095,7 +1095,7 @@ jobs:
           cat << EOF >> release_notes.md
           - **SUSFS $SUSFS_BASE_VERSION** - Advanced hiding and security features
           EOF
-          if [ "$ksu_type" == "RSKSU" ] && [ "${ksu_ver_global:-0}" -lt 12884 ]; then
+          if [ "$ksu_type" == "BAKASU" ] && [ "${ksu_ver_global:-0}" -lt 12884 ]; then
             cat << EOF >> release_notes.md
           - **Magic Mount Support** - Seamless file system modifications
           EOF
@@ -1144,7 +1144,7 @@ jobs:
           
           ### Official Manager
           EOF
-          if [ "$ksu_type" == "RSKSU" ]; then
+          if [ "$ksu_type" == "BAKASU" ]; then
             cat << EOF >> release_notes.md
           - **ReSukiSU Manager**  
             → [GitHub Release](https://github.com/KernelSU/KernelSU/releases)
