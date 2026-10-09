@@ -843,7 +843,7 @@ jobs:
       REPO_NAME: ${{ github.event.repository.name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SUSFS_BASE_VERSION: ${{ needs.set-op-model.outputs.susfs_base_version }}
-      RELEASE_NAME: '*TEST BUILD* OnePlus Kernels With ReSukiSU & SUSFS ${{ needs.set-op-model.outputs.susfs_base_version }} *TEST BUILD*'
+      RELEASE_NAME: '*TEST BUILD* OnePlus Kernels With BakaSU & SUSFS ${{ needs.set-op-model.outputs.susfs_base_version }} *TEST BUILD*'
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v6
@@ -932,7 +932,7 @@ jobs:
             <<< "${{ needs.set-op-model.outputs.active_gki_keys }}"
           
           cat << EOF > release_notes.md
-          # 🎯 OnePlus Kernels with ReSukiSU & SUSFS $SUSFS_BASE_VERSION
+          # 🎯 OnePlus Kernels with BakaSU & SUSFS $SUSFS_BASE_VERSION
           
           > **Build Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
           > **Build ID:** \`${{ github.run_id }}\`  
