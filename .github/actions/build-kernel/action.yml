@@ -1888,7 +1888,7 @@ runs:
         fi
         if [ -f block/adios.c ]; then setcfg CONFIG_MQ_IOSCHED_ADIOS y; setcfg CONFIG_MQ_IOSCHED_DEFAULT_ADIOS y; echo "ADIOS configured"; fi
         if ! grep -q check_for_block drivers/base/power/wakeup.c 2>/dev/null; then
-          curl -fsSL https://raw.githubusercontent.com/hafizhasant/OnePlus_ReSukiSU_SUSFS/main/patches/experimental/boeffla_wl_blocker.patch -o /tmp/boeffla.patch && tp /tmp/boeffla.patch && echo "Boeffla applied" || echo "Boeffla skipped"
+          curl -fsSL https://raw.githubusercontent.com/hafizhasant/OnePlus_BakaSU_SUSFS/main/patches/experimental/boeffla_wl_blocker.patch -o /tmp/boeffla.patch && tp /tmp/boeffla.patch && echo "Boeffla applied" || echo "Boeffla skipped"
         fi
         if [ -f drivers/base/power/boeffla_wl_blocker.c ]; then
           W=drivers/base/power/wakeup.c
