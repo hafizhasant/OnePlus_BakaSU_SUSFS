@@ -23,7 +23,7 @@ on:
         description: 'Enter KernelSU build json'
         required: true
         type: string
-        default: '[{"type":"BAKASU","hash":"5b76b884c75f729a220bb317aa4a4fc78f0e0e9c"}]'
+        default: '[{"type":"BAKASU","hash":"969de3d0ce65d2d75e5a2f6c548d9e14817ef459"}]'
       optimize_level:
         description: "Compiler optimization level"
         required: true
