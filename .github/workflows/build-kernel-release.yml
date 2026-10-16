@@ -958,8 +958,9 @@ jobs:
             # had the kernel version suffix stripped for display. Try exact ORIG_MODEL
             # first, fall back to base MODEL, both filtered by os_version.
             full_kv=$(echo "$kernel_ver" | sed 's/^[^-]*-//')
-            possible_orig_model="${model}-${full_kv}"
-            feature_flags=$(jq -r --arg MODEL "$model" --arg ORIG_MODEL "$possible_orig_model" --arg OS "$os_ver" '
+            lookup_model="${model%-OOS}"
+            possible_orig_model="${lookup_model}-${full_kv}"
+            feature_flags=$(jq -r --arg MODEL "$lookup_model" --arg ORIG_MODEL "$possible_orig_model" --arg OS "$os_ver" '
               ([ .[] | select(.model == $ORIG_MODEL and .os_version == $OS) ][0]) //
               ([ .[] | select(.model == $MODEL      and .os_version == $OS) ][0]) |
               "\(.hmbird // false)\t\(.susfs // false)\t\(.bbr // false)\t\(.bbr3 // false)\t\(.bbg // false)\t\(.ttl // false)\t\(.ip_set // false)\t\(.unicode // false)\t\(.ds // false)\t\(.ntsync // false)"
